@@ -5,9 +5,26 @@
     <style>
       :host {
         display: block;
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+      }
+
+      #container {
+        display: flex;
+      }
+
+      #container ::slotted(*){
+        width: 100%;
+        height: 100vh;
+        flex-shrink: 0;
       }
     </style>
-    <h2>Hello</h2>
+    
+    <div id="container">
+      <slot></slot>
+    </div>
+
   </template>
 
   <script>
