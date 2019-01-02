@@ -50,12 +50,16 @@
 
         /** LIFECYCLE METHODS
          * ================================ */
+        ready: function() {
+          requestAnimationFrame(this._installListeners.bind(this));
+        },
+
         attached: function() {
           this._resetSelected();
         },
 
 
-        /** OBSERVERS CALLBACK METHODS
+        /** CALLBACK METHODS
          * ================================ */
         _selectedChanged: function(selected, oldSelected) {
           if (oldSelected) oldSelected.removeAttribute('selected');
@@ -64,13 +68,28 @@
           }
         },
 
+        _installListeners: function() {
+          this.addEventListener('transitionend', this._clearAnimationStyles);
+        },
+
+        _clearAnimationStyles: function(e) {
+          e.target.style.transition = '';
+        },
+
 
         /** PRIVATE METHODS
          * ================================ */
         _resetSelected: function() {
           if (!this._selected) {
             this.set('_selected', this.$.container.firstElementChild);
+            this.set('_currentOffset', 0);
           }
+        },
+
+        _translate: function(elem, dx, withTransition) {
+          this.set('_currentOffset', this._currentOffset + dx);
+          elem.style.transition = withTransition ? 'transform 0.3s' : '';
+          elem.style.transform = 'translateX(' + this._currentOffset + 'px)';
         },
 
 
@@ -80,6 +99,7 @@
           const elem = this._selected && this._selected.previousElementSibling;
           if (elem) {
             this.set('_selected', elem);
+            this._translate(this.$.container, this.offsetWidth, true);
           }
         },
 
@@ -87,6 +107,7 @@
           const elem = this._selected && this._selected.nextElementSibling;
           if (elem) {
             this.set('_selected', elem);
+            this._translate(this.$.container, -this.offsetWidth, true);
           }
         }
       });
