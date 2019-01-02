@@ -39,6 +39,56 @@
     ( function() {
       Polymer({
         is: 'fluid-carousel',
+
+        properties: {
+          _selected: {
+            type: Object,
+            observer: '_selectedChanged'
+          }
+        },
+
+
+        /** LIFECYCLE METHODS
+         * ================================ */
+        attached: function() {
+          this._resetSelected();
+        },
+
+
+        /** OBSERVERS CALLBACK METHODS
+         * ================================ */
+        _selectedChanged: function(selected, oldSelected) {
+          if (oldSelected) oldSelected.removeAttribute('selected');
+          if (selected) {
+            selected.setAttribute('selected', '');
+          }
+        },
+
+
+        /** PRIVATE METHODS
+         * ================================ */
+        _resetSelected: function() {
+          if (!this._selected) {
+            this.set('_selected', this.$.container.firstElementChild);
+          }
+        },
+
+
+        /** PUBLIC API
+         * ================================ */
+        previous: function() {
+          const elem = this._selected && this._selected.previousElementSibling;
+          if (elem) {
+            this.set('_selected', elem);
+          }
+        },
+
+        next: function() {
+          const elem = this._selected && this._selected.nextElementSibling;
+          if (elem) {
+            this.set('_selected', elem);
+          }
+        }
       });
     })();
   </script>
