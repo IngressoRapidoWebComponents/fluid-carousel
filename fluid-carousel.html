@@ -118,7 +118,9 @@
         _resetSelected: function() {
           if (!this._selected) {
             this.set('_selected', this.$.container.firstElementChild);
-            this.set('_currentOffset', 0);
+            this._currentOffset = 0;
+            this._selectedIndex = 0;
+
           }
         },
 
@@ -136,8 +138,9 @@
           var elem = this._selected && this._selected.previousElementSibling;
           if (elem) {
             this.set('_selected', elem);
-            this.set('_currentOffset', this._currentOffset + this.offsetWidth);
+            this._currentOffset = this._currentOffset + this.offsetWidth;
             this._translate(this.$.container, this._currentOffset, true);
+            return --this._selectedIndex;
           }
         },
 
@@ -145,9 +148,18 @@
           var elem = this._selected && this._selected.nextElementSibling;
           if (elem) {
             this.set('_selected', elem);
-            this.set('_currentOffset', this._currentOffset - this.offsetWidth);
+            this._currentOffset = this._currentOffset - this.offsetWidth;
             this._translate(this.$.container, this._currentOffset, true);
+            return ++this._selectedIndex;
           }
+        },
+
+        getSelectedIndex: function() {
+          return this._selectedIndex;
+        },
+
+        getSelected: function() {
+          return this._selected;
         }
       });
     })();
