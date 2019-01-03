@@ -45,6 +45,10 @@
             type: Object,
             observer: '_selectedChanged'
           },
+          _selectedIndex: {
+            type: Number,
+            value: 0
+          },
           _itemStyles: {
             type: Object,
             value: {
@@ -68,16 +72,16 @@
 
         /** PRIVATE METHODS
          * ================================ */
+        _setup: function() {
+          this._resetSelected();
+          this._installListeners();
+        },
+
         _selectedChanged: function(selected, oldSelected) {
           if (oldSelected) oldSelected.removeAttribute('selected');
           if (selected) {
             selected.setAttribute('selected', '');
           }
-        },
-
-        _setup: function() {
-          this._installListeners();
-          this._resetSelected();
         },
 
         _clearAnimationStyles: function(e) {
@@ -124,12 +128,12 @@
           this.addEventListener('touchstart', this._touchstart.bind(this));
           this.addEventListener('touchmove', this._touchmove.bind(this));
           this.addEventListener('touchend', this._touchend.bind(this));
+          window.addEventListener('resize', this._adjustLayout.bind(this));
         },
 
         _resetSelected: function() {
           if (!this._selected) {
             this.set('_selected', this.$.container.firstElementChild);
-            this._selectedIndex = 0;
           }
         },
 
@@ -143,13 +147,15 @@
           var margins = itemStyles.margin.split(' ');
           this._itemStyles.sideMargin = parseFloat(margins[1] || margins[0]);
 
-          this._currentOffset = (this.offsetWidth - this._itemStyles.width)/2.0 - this._itemStyles.sideMargin;
+          this._currentOffset = (this.offsetWidth - this._itemStyles.width)/2.0
+            - this._selectedIndex *(this._itemStyles.width + 2*this._itemStyles.sideMargin)
+            - this._itemStyles.sideMargin;
           this.$.container.style.transform = 'translateX('+this._currentOffset +'px)';
         },
 
         _translate: function(elem, dx, withTransition) {
           requestAnimationFrame( function() {
-            elem.style.transition = withTransition ? 'transform 0.3s' : '';
+            elem.style.transition = withTransition ? 'transform 0.4s' : '';
             elem.style.transform = 'translateX(' + dx + 'px)';
           });
         },
@@ -163,8 +169,10 @@
             this.set('_selected', elem);
             this._currentOffset = this._currentOffset + this._itemStyles.width + 2*this._itemStyles.sideMargin;
             this._translate(this.$.container, this._currentOffset, true);
-            return --this._selectedIndex;
+            this._selectedIndex--;
           }
+
+          return this.getSelectedIndex();
         },
 
         next: function() {
@@ -173,8 +181,10 @@
             this.set('_selected', elem);
             this._currentOffset = this._currentOffset - this._itemStyles.width  - 2*this._itemStyles.sideMargin;
             this._translate(this.$.container, this._currentOffset, true);
-            return ++this._selectedIndex;
+            this._selectedIndex++;
           }
+
+          return this.getSelectedIndex();
         },
 
         getSelectedIndex: function() {
