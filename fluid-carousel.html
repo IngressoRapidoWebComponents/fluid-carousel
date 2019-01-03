@@ -82,6 +82,7 @@
           if (oldSelected) oldSelected.removeAttribute('selected');
           if (selected) {
             selected.setAttribute('selected', '');
+            this.fire('selected-changed', { index: this._selectedIndex });
           }
         },
 
@@ -133,7 +134,9 @@
         },
 
         _resetSelected: function() {
-          if (!this._selected && this.$.container.firstElementChild && this.$.container.firstElementChild.is !== 'dom-repeat') {
+          if ( (!this._selected && this.$.container.firstElementChild && this.$.container.firstElementChild.is !== 'dom-repeat')
+                || (this._selected && this._selected.parentElement !== this)) {
+            this._selectedIndex = 0;
             this.set('_selected', this.$.container.firstElementChild);
           }
         },
@@ -180,10 +183,10 @@
         previous: function() {
           var elem = this._selected && this._selected.previousElementSibling;
           if (elem) {
+            this._selectedIndex--;
             this.set('_selected', elem);
             this._currentOffset = this._currentOffset + this._itemStyles.width + 2*this._itemStyles.sideMargin;
             this._translate(this.$.container, this._currentOffset, true);
-            this._selectedIndex--;
           }
 
           return this.getSelectedIndex();
@@ -192,10 +195,10 @@
         next: function() {
           var elem = this._selected && this._selected.nextElementSibling;
           if (elem && this._selected.nextElementSibling.is !== 'dom-repeat') {
+            this._selectedIndex++;
             this.set('_selected', elem);
             this._currentOffset = this._currentOffset - this._itemStyles.width  - 2*this._itemStyles.sideMargin;
             this._translate(this.$.container, this._currentOffset, true);
-            this._selectedIndex++;
           }
 
           return this.getSelectedIndex();
@@ -207,6 +210,11 @@
 
         getSelected: function() {
           return this._selected;
+        },
+
+        reset: function() {
+          this._resetSelected();
+          this._adjustLayout();
         }
       });
     })();
