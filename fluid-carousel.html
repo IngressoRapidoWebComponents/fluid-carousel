@@ -55,7 +55,7 @@
         },
 
 
-        /** CALLBACK METHODS
+        /** PRIVATE METHODS
          * ================================ */
         _selectedChanged: function(selected, oldSelected) {
           if (oldSelected) oldSelected.removeAttribute('selected');
@@ -69,17 +69,29 @@
           this._resetSelected();
         },
 
-        _installListeners: function() {
-          this.addEventListener('transitionend', this._clearAnimationStyles);
-        },
-
         _clearAnimationStyles: function(e) {
           e.target.style.transition = '';
         },
 
+        _touchstart: function() {
+          console.log('touch start');
+        },
 
-        /** PRIVATE METHODS
-         * ================================ */
+        _touchmove: function() {
+          console.log('touch move');
+        },
+
+        _touchend: function() {
+          console.log('touch end');
+        },
+
+         _installListeners: function() {
+          this.addEventListener('transitionend', this._clearAnimationStyles);
+          this.addEventListener('touchstart', this._touchstart.bind(this));
+          this.addEventListener('touchmove', this._touchmove.bind(this));
+          this.addEventListener('touchend', this._touchend.bind(this));
+        },
+
         _resetSelected: function() {
           if (!this._selected) {
             this.set('_selected', this.$.container.firstElementChild);
