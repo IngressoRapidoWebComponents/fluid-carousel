@@ -89,20 +89,20 @@
         },
 
         _touchstart: function(e) {
-          if (!this._isSwiping) {
+          if (!this._swipeDir) {
             this._touchStartX = e.changedTouches[0].clientX;
             this._touchStartY = e.changedTouches[0].clientY;
           }
         },
 
         _touchmove: function(e) {
-          if (!this._isSwiping) {
+          if (!this._swipeDir) {
             var absX = Math.abs(e.changedTouches[0].clientX - this._touchStartX);
             var absY = Math.abs(e.changedTouches[0].clientY - this._touchStartY);
-            this._isSwiping = absX > absY;
+            this._swipeDir = absX > absY ? 'x' : 'y';
           }
 
-          if (this._isSwiping) {
+          if (this._swipeDir === 'x') {
             e.preventDefault();
             this._dx = Math.round(e.changedTouches[0].clientX - this._touchStartX);
             this._translate(this.$.container, this._dx + this._currentOffset);
@@ -110,7 +110,7 @@
         },
 
         _touchend: function(e) {
-          if (this._isSwiping) {
+          if (this._swipeDir === 'x') {
             if (this._dx > 100 && this._selected.previousElementSibling) {
               this.previous();
             } else if (this._dx < -100 && this._selected.nextElementSibling && this._selected.nextElementSibling.is !== 'dom-repeat') {
@@ -119,7 +119,7 @@
               this._translate(this.$.container, this._currentOffset, true);
             }
 
-            this._isSwiping = false;
+            this._swipeDir = null;
           }
         },
 
