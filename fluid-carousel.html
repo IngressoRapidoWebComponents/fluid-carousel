@@ -62,6 +62,7 @@
         /** LIFECYCLE METHODS
          * ================================ */
         ready: function() {
+          this.addEventListener('dom-change', this._forceDomRepeatSelect.bind(this));
           requestAnimationFrame(this._setup.bind(this));
         },
 
@@ -132,22 +133,28 @@
         },
 
         _resetSelected: function() {
-          if (!this._selected) {
+          if (!this._selected && this.$.container.firstElementChild && this.$.container.firstElementChild.is !== 'dom-repeat') {
             this.set('_selected', this.$.container.firstElementChild);
           }
         },
 
         _adjustLayout: function() {
+          var elementStyles = getComputedStyle(this);
+          var elementWidth = elementStyles.width.indexOf('%') > -1
+            ? 0.01*parseFloat(elementStyles.width)*window.innerWidth
+            : parseFloat(elementStyles.width);
+          
+
           var itemStyles = getComputedStyle(this.$.container.firstElementChild);
           
           this._itemStyles.width = itemStyles.width.indexOf('%') > -1
-            ? 0.01*parseFloat(itemStyles.width)*this.offsetWidth
+            ? 0.01*parseFloat(itemStyles.width)*elementWidth
             : parseFloat(itemStyles.width);
           
           var margins = itemStyles.margin.split(' ');
           this._itemStyles.sideMargin = parseFloat(margins[1] || margins[0]);
 
-          this._currentOffset = (this.offsetWidth - this._itemStyles.width)/2.0
+          this._currentOffset = (elementWidth - this._itemStyles.width)/2.0
             - this._selectedIndex *(this._itemStyles.width + 2*this._itemStyles.sideMargin)
             - this._itemStyles.sideMargin;
           this.$.container.style.transform = 'translateX('+this._currentOffset +'px)';
@@ -158,6 +165,13 @@
             elem.style.transition = withTransition ? 'transform 0.4s' : '';
             elem.style.transform = 'translateX(' + dx + 'px)';
           });
+        },
+
+        _forceDomRepeatSelect: function(e) {
+          if (e.target.is === 'dom-repeat') {
+            this.removeEventListener('dom-change', this._forceDomRepeatSelect);
+            requestAnimationFrame(this._resetSelected.bind(this));
+          }
         },
 
 
