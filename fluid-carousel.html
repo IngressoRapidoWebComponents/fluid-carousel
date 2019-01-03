@@ -109,7 +109,7 @@
           if (this._isSwiping) {
             if (this._dx > 100 && this._selected.previousElementSibling) {
               this.previous();
-            } else if (this._dx < -100 && this._selected.nextElementSibling) {
+            } else if (this._dx < -100 && this._selected.nextElementSibling && this._selected.nextElementSibling.is !== 'dom-repeat') {
               this.next();
             } else {
               this._translate(this.$.container, this._currentOffset, true);
@@ -169,7 +169,7 @@
 
         next: function() {
           var elem = this._selected && this._selected.nextElementSibling;
-          if (elem) {
+          if (elem && this._selected.nextElementSibling.is !== 'dom-repeat') {
             this.set('_selected', elem);
             this._currentOffset = this._currentOffset - this._itemStyles.width  - 2*this._itemStyles.sideMargin;
             this._translate(this.$.container, this._currentOffset, true);
