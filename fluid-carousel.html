@@ -51,11 +51,7 @@
         /** LIFECYCLE METHODS
          * ================================ */
         ready: function() {
-          requestAnimationFrame(this._installListeners.bind(this));
-        },
-
-        attached: function() {
-          this._resetSelected();
+          requestAnimationFrame(this._setup.bind(this));
         },
 
 
@@ -66,6 +62,11 @@
           if (selected) {
             selected.setAttribute('selected', '');
           }
+        },
+
+        _setup: function() {
+          this._installListeners();
+          this._resetSelected();
         },
 
         _installListeners: function() {
