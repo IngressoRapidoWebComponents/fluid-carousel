@@ -82,20 +82,30 @@
 
         _touchmove: function(e) {
           if (!this._isSwiping) {
-            const absX = Math.abs(e.changedTouches[0].clientX - this._touchStartX);
-            const absY = Math.abs(e.changedTouches[0].clientY - this._touchStartY);
+            var absX = Math.abs(e.changedTouches[0].clientX - this._touchStartX);
+            var absY = Math.abs(e.changedTouches[0].clientY - this._touchStartY);
             this._isSwiping = absX > absY;
           }
 
           if (this._isSwiping) {
             e.preventDefault();
-            var dx = Math.round(e.changedTouches[0].clientX - this._touchStartX);
-            this._translate(this.$.container, dx);
+            this._dx = Math.round(e.changedTouches[0].clientX - this._touchStartX);
+            this._translate(this.$.container, this._dx + this._currentOffset);
           }
         },
 
-        _touchend: function() {
-          console.log('touch end');
+        _touchend: function(e) {
+          if (this._isSwiping) {
+            if (this._dx > 100 && this._selected.previousElementSibling) {
+              this.previous();
+            } else if (this._dx < -100 && this._selected.nextElementSibling) {
+              this.next();
+            } else {
+              this._translate(this.$.container, this._currentOffset, true);
+            }
+
+            this._isSwiping = false;
+          }
         },
 
          _installListeners: function() {
@@ -123,7 +133,7 @@
         /** PUBLIC API
          * ================================ */
         previous: function() {
-          const elem = this._selected && this._selected.previousElementSibling;
+          var elem = this._selected && this._selected.previousElementSibling;
           if (elem) {
             this.set('_selected', elem);
             this.set('_currentOffset', this._currentOffset + this.offsetWidth);
@@ -132,7 +142,7 @@
         },
 
         next: function() {
-          const elem = this._selected && this._selected.nextElementSibling;
+          var elem = this._selected && this._selected.nextElementSibling;
           if (elem) {
             this.set('_selected', elem);
             this.set('_currentOffset', this._currentOffset - this.offsetWidth);
