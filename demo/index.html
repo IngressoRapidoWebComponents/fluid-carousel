@@ -15,6 +15,16 @@
 
     <custom-style>
       <style is="custom-style" include="demo-pages-shared-styles">
+        fluid-carousel {
+          --item-width: 85%;
+          --item-margin: 5px;
+        }
+        .card {
+          height: 400px;
+          border-radius: 5px;
+          box-shadow: 1px 1px 5px rgb(126, 126, 126);
+          background: linear-gradient(to right, #93a5cf, #e4efe9);
+        }
       </style>
     </custom-style>
   </head>
@@ -24,8 +34,8 @@
       <demo-snippet>
         <template>
           <fluid-carousel>
-            <template is="dom-repeat" items="[1,2,3,4,5]">
-              <div style="background: linear-gradient(to right, #93a5cf, #e4efe9);"></div>
+            <template is="dom-repeat" items="[1,2,3,4,5]" as="item">
+              <div class="card"></div>
             </template>
           </fluid-carousel>
         </template>

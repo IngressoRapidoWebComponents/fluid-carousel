@@ -15,8 +15,8 @@
       }
 
       #container ::slotted(*){
-        width: 100%;
-        height: 100vh;
+        width: var(--item-width, 100%);
+        margin: var(--item-margin, 0);
         flex-shrink: 0;
       }
     </style>
@@ -44,6 +44,13 @@
           _selected: {
             type: Object,
             observer: '_selectedChanged'
+          },
+          _itemStyles: {
+            type: Object,
+            value: {
+              width: Number,
+              sideMargins: Number
+            }
           }
         },
 
@@ -52,6 +59,10 @@
          * ================================ */
         ready: function() {
           requestAnimationFrame(this._setup.bind(this));
+        },
+
+        attached: function() {
+          this._adjustLayout();
         },
 
 
@@ -118,10 +129,22 @@
         _resetSelected: function() {
           if (!this._selected) {
             this.set('_selected', this.$.container.firstElementChild);
-            this._currentOffset = 0;
             this._selectedIndex = 0;
-
           }
+        },
+
+        _adjustLayout: function() {
+          var itemStyles = getComputedStyle(this.$.container.firstElementChild);
+          
+          this._itemStyles.width = itemStyles.width.indexOf('%') > -1
+            ? 0.01*parseFloat(itemStyles.width)*this.offsetWidth
+            : parseFloat(itemStyles.width);
+          
+          var margins = itemStyles.margin.split(' ');
+          this._itemStyles.sideMargin = parseFloat(margins[1] || margins[0]);
+
+          this._currentOffset = (this.offsetWidth - this._itemStyles.width)/2.0 - this._itemStyles.sideMargin;
+          this.$.container.style.transform = 'translateX('+this._currentOffset +'px)';
         },
 
         _translate: function(elem, dx, withTransition) {
@@ -138,7 +161,7 @@
           var elem = this._selected && this._selected.previousElementSibling;
           if (elem) {
             this.set('_selected', elem);
-            this._currentOffset = this._currentOffset + this.offsetWidth;
+            this._currentOffset = this._currentOffset + this._itemStyles.width + 2*this._itemStyles.sideMargin;
             this._translate(this.$.container, this._currentOffset, true);
             return --this._selectedIndex;
           }
@@ -148,7 +171,7 @@
           var elem = this._selected && this._selected.nextElementSibling;
           if (elem) {
             this.set('_selected', elem);
-            this._currentOffset = this._currentOffset - this.offsetWidth;
+            this._currentOffset = this._currentOffset - this._itemStyles.width  - 2*this._itemStyles.sideMargin;
             this._translate(this.$.container, this._currentOffset, true);
             return ++this._selectedIndex;
           }
