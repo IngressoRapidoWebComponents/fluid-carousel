@@ -146,20 +146,17 @@
           var elementWidth = elementStyles.width.indexOf('%') > -1
             ? 0.01*parseFloat(elementStyles.width)*window.innerWidth
             : parseFloat(elementStyles.width);
-          
 
           var itemStyles = getComputedStyle(this.$.container.firstElementChild);
-          
           this._itemStyles.width = itemStyles.width.indexOf('%') > -1
             ? 0.01*parseFloat(itemStyles.width)*elementWidth
             : parseFloat(itemStyles.width);
-          
-          var margins = itemStyles.margin.split(' ');
-          this._itemStyles.sideMargin = parseFloat(margins[1] || margins[0]);
+          this._itemStyles.sideMargin = parseFloat(itemStyles.marginLeft);
 
           this._currentOffset = (elementWidth - this._itemStyles.width)/2.0
             - this._selectedIndex *(this._itemStyles.width + 2*this._itemStyles.sideMargin)
             - this._itemStyles.sideMargin;
+
           this.$.container.style.transform = 'translateX('+this._currentOffset +'px)';
         },
 
