@@ -1,0 +1,28 @@
+{
+  "name": "fluid-carousel",
+  "version": "1.0.0",
+  "description": "A Polymer carousel element designed for flexibility and a fluid interaction",
+  "main": "fluid-carousel.js",
+  "scripts": {
+    "start": "polymer serve --npm",
+    "test": "polymer test --npm"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IngressoRapidoWebComponents/fluid-carousel.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/IngressoRapidoWebComponents/fluid-carousel/issues"
+  },
+  "homepage": "https://github.com/IngressoRapidoWebComponents/fluid-carousel#readme",
+  "dependencies": {
+    "@polymer/polymer": "^3.3.1"
+  },
+  "devDependencies": {
+    "@polymer/iron-demo-helpers": "^3.1.0",
+    "@webcomponents/webcomponentsjs": "^2.4.3",
+    "polymer-cli": "^1.9.11"
+  }
+}
